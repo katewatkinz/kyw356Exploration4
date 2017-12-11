@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+    <script src= "http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
+    <script src="https://d1fxtkz8shb9d2.cloudfront.net/websocket-multiplex-0.1.js">
+  </script>
+  
+    <style>
+      .textBox {
+          width: 300px;
+          float: left;
+          margin: 0 20px 0 20px;
+          
+      }
+      .textBox div, .textBox input {
+          border: 1px solid;
+          -moz-border-radius: 4px;
+          border-radius: 4px;
+          width: 100%;
+          padding: 0px;
+          margin: 5px;
+      }
+      .textBox div {
+          border-color: grey;
+          height: 300px;
+          overflow: auto;
+          background-color: beige;
+      }
+      .textBox input {
+          height: 30px;
+          background-color: beige;
+      }
+      h1 {
+          margin-left: 75px;
+          color: beige;
+      }
+      body {
+          background-color: #000000;
+          font-family: "Calibri";
+      }
+    </style>
+</head><body lang="en">
+    <h1>SockJS Multiplex</h1>
+
+    <div id="first" class="textBox">
+      <div></div>
+      <form><input  value=" "></form>
+    </div>
+
+    <div id="second" class="textBox">
+      <div></div>
+      <form><input ></form>
+    </div>
+
+    <div id="third" class="textBox">
+      <div></div>
+      <form><input ></form>
+    </div>
+    
+    <div id="fourth" class="textBox">
+      <div></div>
+      <form><input ></form>
+    </div>
+
+    <script>
+        var pipe = function(ws, el_name) {
+            var div  = $(el_name + ' div');
+            var inp  = $(el_name + ' input');
+            var form = $(el_name + ' form');
+
+            var print = function(m, p) {
+                p = (p === undefined) ? '' : JSON.stringify(p);
+                div.append($("<code>").text(m + ' ' + p));
+                div.append($("<br>"));
+                div.scrollTop(div.scrollTop() + 10000);
+            };
+
+            ws.onopen    = function()  {print('opened', ws.protocol);};
+            ws.onmessage = function(e) {print('recieved', e.data);};
+            ws.onclose   = function()  {print('closed');};
+
+            form.submit(function() {
+                print('sending', inp.val());
+                ws.send(inp.val());
+                inp.val('');
+                return false;
+            });
+        };
+
+        
+        
+        
+        var sockjs_url = 'http://127.0.0.1:9999/multiplex';
+        var sockjs = new SockJS(sockjs_url);
+
+        var multiplexer = new WebSocketMultiplex(sockjs); //WebSocket(sockjs);  //websocket_mutliplex.MultiplexServer(sockjs);
+        var kate1  = multiplexer.channel('kate1');
+        var otherRobot  = multiplexer.channel('otherRobot');
+        var CAAARRRRAAAALL = multiplexer.channel('CAAARRRRAAAALL');
+        var CAARRRLLLLLJR = multiplexer.channel('CAARRRLLLLLJR');
+
+        
+        pipe(kate1,  '#first');
+        pipe(otherRobot,  '#second');
+        pipe(CAAARRRRAAAALL, '#third');
+        pipe(CAARRRLLLLLJR, '#fourth');
+
+    </script>
+</body></html>
